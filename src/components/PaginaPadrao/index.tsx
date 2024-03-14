@@ -10,7 +10,7 @@ export default function PaginaPadrao() {
                 </div>
             </header>
             <div>
-                <Outlet/>
+                <Outlet />
             </div>
         </>
     );
