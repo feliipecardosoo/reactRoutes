@@ -1,32 +1,57 @@
-import { useParams } from 'react-router-dom';
-import pratos from '../../data/cardapio.json';
+import styles from './Prato.module.scss'; 
+import { useParams, useNavigate } from 'react-router-dom';
+import classNames from 'classnames';
+import cardapio from 'data/cardapio.json';
 
-interface Teste {
-    id: string,
-    [key: string]: string | undefined
-}
+import NotFound from 'pages/NotFound';
 
 export default function Prato() {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const prato = cardapio.find(item => item.id === Number(id));
 
-    const { id } = useParams<Teste>();
-
-    const pratoEncontrado = pratos.find(prato => prato.id.toString() === id);
-
-    if(!pratoEncontrado) {
-        return <div>Prato Invalido!</div>;
+    if(!prato) {
+        return <NotFound />;
     }
 
     return (
-        <div>
-            <h1>
-                {pratoEncontrado?.title}
-            </h1>
-            <p>
-                {pratoEncontrado?.description}</p>
-            <p>
-                {pratoEncontrado?.price}
-            </p>
-            <img src={pratoEncontrado?.photo} alt={pratoEncontrado?.title} />
-        </div>
+        <>
+            <button 
+                className={styles.voltar}
+                onClick={() => navigate(-1)}
+            >
+                {'< Voltar'}
+            </button>
+            <section className={styles.container}>
+                <h1 className={styles.titulo}>
+                    {prato.title}
+                </h1>
+                <div className={styles.imagem}>
+                    <img src={prato.photo} alt={prato.title} />
+                </div>
+                <div className={styles.conteudo}>
+                    <p className={styles.conteudo__descricao}>
+                        {prato.description}
+                    </p>
+                    <div className={styles.tags}>
+                        <div className={classNames({
+                            [styles.tags__tipo]: true,
+                            [styles[`tags__tipo__${prato.category.label.toLowerCase()}`]]: true
+                        })}>
+                            {prato.category.label}
+                        </div>
+                        <div className={styles.tags__porcao}>
+                            {prato.size}g
+                        </div>
+                        <div className={styles.tags__qtdpessoas}>
+                                Serve {prato.serving} pessoa {prato.serving == 1 ? '' : 's'}
+                        </div>
+                        <div className={styles.tags__valor}>
+                            R$ {prato.price.toFixed(2)}
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </>
     );
 }
